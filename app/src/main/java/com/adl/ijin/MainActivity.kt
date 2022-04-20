@@ -2,8 +2,10 @@ package com.adl.ijin
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
@@ -12,15 +14,25 @@ import com.adl.ijin.model.GetIjinResponse
 import com.adl.ijin.model.ResponsePostData
 import com.adl.ijin.service.RetrofitConfig
 import com.github.drjacky.imagepicker.ImagePicker
+
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+
+    lateinit var photoURI: Uri
 
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -28,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                 val uri = it.data?.data!!
 
                 photo.setImageURI(uri)
+                photoURI = uri
             }
         }
 
@@ -80,10 +93,32 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+//        btnKirim.setOnClickListener({
+//            RetrofitConfig().getIjin().addDataForm(spnKategori.selectedItem.toString(),txtDariTanggal.text.toString(),
+//                   txtSampaiTanggal.text.toString(),txtPerihal.text.toString(),txtKeterangan.text.toString() ).enqueue(
+//                   object:Callback<ResponsePostData>{
+//                       override fun onResponse(
+//                           call: Call<ResponsePostData>,
+//                           response: Response<ResponsePostData>
+//                       ) {
+//                           Toast.makeText(this@MainActivity,(response.body() as ResponsePostData).message,Toast.LENGTH_LONG).show()
+//                       }
+//
+//                       override fun onFailure(call: Call<ResponsePostData>, t: Throwable) {
+//                           Log.e("error post data",t.localizedMessage.toString())
+//                       }
+//
+//                   }
+//                   )
+//        })
+
         btnKirim.setOnClickListener({
-            RetrofitConfig().getIjin().addDataForm(spnKategori.selectedItem.toString(),txtDariTanggal.text.toString(),
-                   txtSampaiTanggal.text.toString(),txtPerihal.text.toString(),txtKeterangan.text.toString() ).enqueue(
-                   object:Callback<ResponsePostData>{
+            RetrofitConfig().getIjin().addDataAndImage(createRB(spnKategori.selectedItem.toString()),createRB(txtDariTanggal.text.toString()),
+                   createRB(txtSampaiTanggal.text.toString()),createRB(txtPerihal.text.toString()),createRB(txtKeterangan.text.toString()),
+                   uploadImage(photoURI,"lampiran")
+
+                ).enqueue(
+                object:Callback<ResponsePostData>{
                        override fun onResponse(
                            call: Call<ResponsePostData>,
                            response: Response<ResponsePostData>
@@ -93,11 +128,12 @@ class MainActivity : AppCompatActivity() {
 
                        override fun onFailure(call: Call<ResponsePostData>, t: Throwable) {
                            Log.e("error post data",t.localizedMessage.toString())
-                       }
+                     }
 
                    }
                    )
         })
+
     }
 
     fun getCalendarListener (tipe:Int):DatePickerDialog.OnDateSetListener {
@@ -126,4 +162,18 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+
+    fun createRB(data:String):RequestBody{
+        return RequestBody.create(MultipartBody.FORM,data)
+    }
+
+    fun uploadImage(uri:Uri,param:String): MultipartBody.Part {
+        val file:File = File(uri.path)
+        val rb:RequestBody =  file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+
+        return MultipartBody.Part.createFormData(param,file.name,rb)
+
+    }
+
 }
