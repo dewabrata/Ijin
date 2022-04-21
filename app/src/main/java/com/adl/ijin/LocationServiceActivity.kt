@@ -24,6 +24,9 @@ class LocationServiceActivity : AppCompatActivity() {
         btnService.setOnClickListener({
             ContextCompat.startForegroundService(this, Intent(this,LocationService::class.java))
         })
+        btnStop.setOnClickListener({
+            stopService(Intent(this,LocationService::class.java))
+        })
     }
 
 

@@ -54,32 +54,38 @@ class LocationService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         LocationHelper().startListeningUserLocation(this,object :MyLocationListener{
             override fun onLocationChanged(location: Location) {
-                mLocation = location
-                mLocation?.let{
-                  //  Log.d(TAG,"SERVICE SEDANG BERJALAN LOKASINYA ADALAH ${it?.longitude} -  ${it?.latitude} ")
-                    val dateNow = Calendar.getInstance()
-                    val formatDate = "yyyy-MM-dd hh:mm:ss"
-                    val sdf = SimpleDateFormat(formatDate, Locale.US)
+                if (isServiceStarted) {
+                    mLocation = location
+                    mLocation?.let {
+                        //  Log.d(TAG,"SERVICE SEDANG BERJALAN LOKASINYA ADALAH ${it?.longitude} -  ${it?.latitude} ")
+                        val dateNow = Calendar.getInstance()
+                        val formatDate = "yyyy-MM-dd hh:mm:ss"
+                        val sdf = SimpleDateFormat(formatDate, Locale.US)
 
-                    var time = sdf.format(dateNow.time)
-                    RetrofitConfig().getTracking().addDataForm("dewa",it.latitude.toString(),it.longitude.toString(),time).enqueue(object:
-                        Callback<ResponsePostData> {
-                        override fun onResponse(
-                            call: Call<ResponsePostData>,
-                            response: Response<ResponsePostData>
-                        ) {
-                            Log.d("Response",response.body().toString())
-                        }
+                        var time = sdf.format(dateNow.time)
+                        RetrofitConfig().getTracking().addDataForm(
+                            "dewa",
+                            it.latitude.toString(),
+                            it.longitude.toString(),
+                            time
+                        ).enqueue(object :
+                            Callback<ResponsePostData> {
+                            override fun onResponse(
+                                call: Call<ResponsePostData>,
+                                response: Response<ResponsePostData>
+                            ) {
+                                Log.d("Response", response.body().toString())
+                            }
 
-                        override fun onFailure(call: Call<ResponsePostData>, t: Throwable) {
-                            Log.e("error request",t.localizedMessage.toString())
-                        }
+                            override fun onFailure(call: Call<ResponsePostData>, t: Throwable) {
+                                Log.e("error request", t.localizedMessage.toString())
+                            }
 
 
-                    })
+                        })
+                    }
                 }
             }
-
 
         })
         return START_STICKY
@@ -87,5 +93,10 @@ class LocationService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
 
         return null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isServiceStarted=false
     }
 }
