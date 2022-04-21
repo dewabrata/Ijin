@@ -29,5 +29,6 @@ class RetrofitConfig
 
     fun getIjin() = getRetrofit().create(IIjin::class.java)
 
+    fun getTracking() = getRetrofit().create(ITracking::class.java)
 
 }

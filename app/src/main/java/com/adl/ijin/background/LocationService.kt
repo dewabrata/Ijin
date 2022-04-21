@@ -11,8 +11,16 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.adl.ijin.R
+import com.adl.ijin.model.GetIjinResponse
+import com.adl.ijin.model.ResponsePostData
+import com.adl.ijin.service.RetrofitConfig
 import com.adl.ijin.utility.LocationHelper
 import com.adl.ijin.utility.MyLocationListener
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
 
 class LocationService : Service() {
 
@@ -48,7 +56,27 @@ class LocationService : Service() {
             override fun onLocationChanged(location: Location) {
                 mLocation = location
                 mLocation?.let{
-                    Log.d(TAG,"SERVICE SEDANG BERJALAN LOKASINYA ADALAH ${it?.longitude} -  ${it?.latitude} ")
+                  //  Log.d(TAG,"SERVICE SEDANG BERJALAN LOKASINYA ADALAH ${it?.longitude} -  ${it?.latitude} ")
+                    val dateNow = Calendar.getInstance()
+                    val formatDate = "yyyy-MM-dd hh:mm:ss"
+                    val sdf = SimpleDateFormat(formatDate, Locale.US)
+
+                    var time = sdf.format(dateNow.time)
+                    RetrofitConfig().getTracking().addDataForm("dewa",it.latitude.toString(),it.longitude.toString(),time).enqueue(object:
+                        Callback<ResponsePostData> {
+                        override fun onResponse(
+                            call: Call<ResponsePostData>,
+                            response: Response<ResponsePostData>
+                        ) {
+                            Log.d("Response",response.body().toString())
+                        }
+
+                        override fun onFailure(call: Call<ResponsePostData>, t: Throwable) {
+                            Log.e("error request",t.localizedMessage.toString())
+                        }
+
+
+                    })
                 }
             }
 
