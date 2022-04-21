@@ -6,6 +6,6 @@
         <item>Urusan Keluarga</item>
     </string-array>
 
-        <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBWx-d2CaeUwMQ2C3XrkwhoXZRs0GfDKTA</string>
+        <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false"></string>
 
 </resources>
