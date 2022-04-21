@@ -9,7 +9,7 @@ import android.os.Bundle
 
 class LocationHelper {
 
-    var LOCATION_REFRESH_TIME =3000 // 3 detik update gps
+    var LOCATION_REFRESH_TIME = 60000 // 3 detik update gps
     var LOCATION_REFRESH_DISTANCE = 0 // jarak minimum GPS direfresh
 
 

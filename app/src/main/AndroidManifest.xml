@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.adl.ijin" >
+    package="com.adl.ijin">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -16,10 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ijin"
-        android:usesCleartextTraffic="true" >
+        android:usesCleartextTraffic="true">
         <activity
-            android:name=".LocationServiceActivity"
-            android:exported="true">
+            android:name=".MapsActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,23 +27,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:exported="true" >
+            android:name=".LocationServiceActivity"
+            android:exported="true">
 
         </activity>
-        <service android:name=".background.LocationService"
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"></activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+        <service
+            android:name=".background.LocationService"
             android:enabled="true"
-            android:exported="true"
-            />
+            android:exported="true" />
 
-        <receiver android:name=".background.BootDeviceRecievers"
+        <receiver
+            android:name=".background.BootDeviceRecievers"
             android:enabled="true"
-            android:exported="true"
-            >
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-
         </receiver>
     </application>
 
